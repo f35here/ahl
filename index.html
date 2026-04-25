@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes" />
+  <meta name="description" content="أهل الشام - قائمة طعام أنيقة بنمط  استمتع بأشهى المأكولات الشامية في تجربة رقمية فاخرة." />
+  <meta name="theme-color" content="#131313" />
+  <title>أهل الشام | AHL ALSHAM</title>
+<!-- Favicon (using same logo image) -->
+  <link rel="icon" type="image/jpeg" href="./logo/favIcon/logo.jpg" />
+  <link rel="apple-touch-icon" href="./logo/favIcon/logo.jpg" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Google Fonts: Noto Serif, Be Vietnam Pro, Space Grotesk -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* AHL ALSHAM Design Tokens */
+    :root {
+      --surface: #131313;
+      --surface-dim: #131313;
+      --surface-bright: #3a3939;
+      --surface-container-lowest: #0e0e0e;
+      --surface-container-low: #1c1b1b;
+      --surface-container: #201f1f;
+      --surface-container-high: #2a2a2a;
+      --surface-container-highest: #353534;
+      --on-surface: #e5e2e1;
+      --on-surface-variant: #d2c5b5;
+      --outline: #9a8f80;
+      --outline-variant: #4e4539;
+      --surface-tint: #eac07e;
+      --primary: #eac07e;
+      --on-primary: #432c00;
+      --primary-container: #c59e5f;
+      --on-primary-container: #4f3500;
+      --secondary: #c8c8b0;
+      --on-secondary: #303221;
+      --secondary-container: #494a38;
+      --tertiary: #c8c6c5;
+      --error: #ffb4ab;
+      --error-container: #93000a;
+      --gold-accent: #C59E5F;
+      
+      /* Fonts */
+      --font-serif: 'Noto Serif', Georgia, serif;
+      --font-sans: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+      --font-mono: 'Space Grotesk', monospace;
+      
+      /* Spacing */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+      --space-7: 48px;
+      --gutter: 24px;
+      --margin-edge: 20px;
+      
+      /* Radius */
+      --radius-sm: 0.125rem;
+      --radius-md: 0.375rem;
+      --radius-lg: 0.5rem;
+      --radius-xl: 0.75rem;
+      --radius-full: 9999px;
+      
+      /* Shadows (soft glow) */
+      --glow-sm: 0 0 0 1px rgba(234, 192, 126, 0.15);
+      --glow-md: 0 4px 12px rgba(0,0,0,0.6), 0 0 0 1px rgba(234,192,126,0.2);
+      --glow-focus: 0 0 0 2px rgba(234,192,126,0.3);
+    }
+
+    body {
+      background-color: var(--surface-dim);
+      font-family: var(--font-sans);
+      color: var(--on-surface);
+      line-height: 1.5;
+      scroll-behavior: smooth;
+    }
+
+    .app {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: var(--surface);
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    }
+
+    /* custom scroll */
+    ::-webkit-scrollbar { width: 3px; height: 3px; }
+    ::-webkit-scrollbar-track { background: var(--surface-container-high); border-radius: var(--radius-full); }
+    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: var(--radius-full); }
+
+    /* Glass header with dark elegance */
+    .glass-header {
+      background: rgba(19, 19, 19, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 0.5px solid rgba(234, 192, 126, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-content {
+      padding: var(--space-5) var(--margin-edge) var(--space-2) var(--margin-edge);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .brand h1 {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), #e6b86e);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
+    .tagline {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .logo-img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: var(--radius-full);
+      border: 0.5px solid var(--primary);
+      box-shadow: var(--glow-sm);
+      background-color: var(--surface-container-high);
+      display: block;
+    }
+
+    .search-wrapper {
+      padding: var(--space-3) var(--margin-edge) var(--space-5) var(--margin-edge);
+      transition: 0.2s;
+    }
+    .search-box {
+      background: var(--surface-container-lowest);
+      border-radius: var(--radius-full);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      border: 0.5px solid var(--outline-variant);
+      transition: all 0.2s;
+    }
+    .search-box i { color: var(--primary); font-size: 0.9rem; }
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      width: 100%;
+      color: var(--on-surface);
+    }
+    .search-box input::placeholder { color: var(--outline); font-weight: 300; }
+    .search-box:focus-within {
+      border-color: var(--primary);
+      box-shadow: var(--glow-focus);
+      transform: scale(1.01);
+    }
+
+    .menu-section {
+      padding: var(--space-3) var(--margin-edge) 100px var(--margin-edge);
+    }
+
+    /* Responsive Grid */
+    .menu-grid {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    @media (min-width: 500px) {
+      .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+      }
+    }
+
+    /* Premium Card */
+    .menu-card {
+      display: flex;
+      background: var(--surface-container-low);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      border: 0.5px solid var(--outline-variant);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+    .menu-card.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .menu-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: var(--glow-md);
+    }
+
+    .card-img {
+      width: 100px;
+      min-width: 100px;
+      background: var(--surface-container-high);
+      overflow: hidden;
+    }
+    .card-img img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .menu-card:hover .card-img img { transform: scale(1.05); }
+
+    .card-info {
+      padding: var(--space-3);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .item-name {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--on-surface);
+    }
+    .item-desc {
+      font-size: 0.7rem;
+      color: var(--on-surface-variant);
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .price {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .add-btn {
+      background: var(--surface-container-highest);
+      border: 0.5px solid var(--primary);
+      border-radius: var(--radius-full);
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--primary);
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+    .add-btn:hover {
+      background: var(--primary);
+      color: var(--on-primary);
+      transform: scale(1.05);
+    }
+    .add-btn.added-animation {
+      animation: btnGlow 0.3s ease;
+    }
+    @keyframes btnGlow {
+      0% { box-shadow: 0 0 0 0 var(--primary); }
+      50% { box-shadow: 0 0 0 6px rgba(234,192,126,0.3); }
+      100% { box-shadow: 0 0 0 0; }
+    }
+
+    /* Toast */
+    .toast-notification {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--surface-container-high);
+      backdrop-filter: blur(20px);
+      border: 0.5px solid var(--primary);
+      color: var(--primary);
+      font-family: var(--font-mono);
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      z-index: 1000;
+      box-shadow: var(--glow-md);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+      white-space: nowrap;
+      font-size: 0.8rem;
+      pointer-events: none;
+    }
+    .toast-notification.show { transform: translateX(-50%) translateY(0); }
+
+    /* Selection Panel */
+    .selection-view {
+      background: var(--surface-container-low);
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      border: 0.5px solid var(--outline-variant);
+      animation: fadeUp 0.35s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .selection-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--primary);
+      padding-bottom: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+    .selection-header h3 {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .clear-btn {
+      background: none;
+      border: 0.5px solid var(--outline-variant);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--error);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .clear-btn:hover { background: var(--error-container); border-color: var(--error); }
+    .selection-list { max-height: 360px; overflow-y: auto; margin-bottom: var(--space-4); }
+    .selection-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 0.5px solid var(--outline-variant);
+    }
+    .item-details { flex: 2; }
+    .item-title { font-weight: 700; font-size: 0.9rem; }
+    .item-price-sm { font-size: 0.7rem; color: var(--primary); font-family: var(--font-mono); }
+    .item-actions { display: flex; gap: 8px; align-items: center; }
+    .qty-btn {
+      background: var(--surface-container-high);
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-full);
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--on-surface);
+    }
+    .qty-btn:hover { background: var(--primary); color: var(--on-primary); }
+    .remove-item { background: none; border: none; color: var(--error); cursor: pointer; font-size: 1rem; }
+    .selection-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 800;
+      font-size: 1.1rem;
+      border-top: 1px solid var(--primary);
+      padding-top: var(--space-4);
+      font-family: var(--font-mono);
+    }
+    .empty-selection { text-align: center; padding: 40px 20px; color: var(--outline); }
+
+    /* Bottom Navigation: fully responsive, scrollable on mobile */
+    .bottom-nav {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 560px;
+      background: rgba(19, 19, 19, 0.92);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(234,192,126,0.2);
+      z-index: 40;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: thin;
+      display: flex;
+      padding: 6px 8px;
+      gap: 2px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .bottom-nav::-webkit-scrollbar {
+      height: 2px;
+    }
+    .nav-item {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: var(--radius-full);
+      color: var(--on-surface-variant);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      min-width: 70px;
+    }
+    .nav-item i {
+      font-size: 1.3rem;
+      transition: transform 0.2s;
+    }
+    .nav-item span {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .nav-item.active {
+      background: var(--surface-container-high);
+      color: var(--primary);
+      border-bottom: 1px solid var(--primary);
+    }
+    .nav-item.active i {
+      transform: scale(1.08);
+      color: var(--primary);
+    }
+    .nav-item:hover {
+      background: var(--surface-container);
+      color: var(--primary);
+    }
+
+    /* Developer Credit with WhatsApp */
+    .developer-credit {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.7rem;
+      color: var(--outline);
+      font-family: var(--font-mono);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .developer-credit a {
+      color: var(--primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.2s;
+    }
+    .developer-credit a:hover {
+      opacity: 0.8;
+    }
+    .loading-spinner { display: flex; justify-content: center; padding: 60px; }
+    .spinner { width: 40px; height: 40px; border: 2px solid var(--surface-container-high); border-top: 2px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .no-results { text-align: center; padding: 48px; background: var(--surface-container-low); border-radius: var(--radius-xl); color: var(--outline); }
+    .search-hidden { opacity: 0; visibility: hidden; height: 0; padding: 0; margin: 0; overflow: hidden; }
+
+    @media (max-width: 480px) {
+      .card-img { width: 85px; min-width: 85px; }
+      .nav-item { min-width: 60px; padding: 6px 8px; }
+      .nav-item i { font-size: 1.2rem; }
+      .brand h1 { font-size: 1.5rem; }
+      .toast-notification { font-size: 0.7rem; padding: 8px 16px; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="glass-header">
+    <div class="header-content">
+      <div class="brand">
+        <h1>أهل الشام</h1>
+        <div class="tagline">تذوقها بشكل مختلف</div>
+      </div>
+      <!-- Logo image placeholder (replace with your own logo) -->
+      <img class="logo-img" src="./logo/logo.jpg" alt="شعار أهل الشام" />
+      
+    </div>
+    <div id="searchWrapper" class="search-wrapper">
+      <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="ابحث في القائمة... (شاورما، بروست، بوكسات)" autocomplete="off" /></div>
+    </div>
+  </div>
+
+  <main class="menu-section">
+    <div id="dynamicContent" class="menu-grid"></div>
+    <div class="developer-credit">
+      <br>
+      <span>الخط الساخن : 15765 <i class="fas fa-phone-alt"></i> </span>
+<br> 
+<hr style="border: 0.5px solid var(--outline); width: 100%; margin: 12px 0;">
+      <a href="https://wa.me/201013706142" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-whatsapp"></i> Developed by Abdelkader Mohamed 
+      </a>
+    </div>
+  </main>
+  <div class="bottom-nav" id="bottomNav"></div>
+</div>
+
+<script>
+  (function(){
+    // ---------- FULL MENU DATA (أهل الشام) ----------
+    const menuItemsRaw = [
+      // بوكسات
+      { name: "بوكس الزعيم ميكس", price: 335, category: "boxes", desc: "بوكس الزعيم - دجاج", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس العظمة دجاج", price: 345, category: "boxes", desc: "عظمة الشاورما", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس العظمة لحم", price: 400, category: "boxes", desc: "عظمة الشاورما", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس العظمة ميكس", price: 370, category: "boxes", desc: "عظمة الشاورما", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس الفتوة دجاج", price: 320, category: "boxes", desc: "بوكس الفتوة", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس الفتوة لحم", price: 380, category: "boxes", desc: "بوكس الفتوة", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس الفتوة ميكس", price: 350, category: "boxes", desc: "بوكس الفتوة", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس المعلم دجاج", price: 300, category: "boxes", desc: "بوكس المعلم", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس المعلم لحم", price: 330, category: "boxes", desc: "بوكس المعلم", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس البركة", price: 390, category: "boxes", desc: "كريسبي مقرمش", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس  الديناميت دجاج", price: 365, category: "boxes", desc: "بروست حار", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس  الديناميت لحم", price: 450, category: "boxes", desc: "بروست حار", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس  الديناميت ميكس", price: 410, category: "boxes", desc: "بروست حار", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس القرمشة كريسبي", price: 200, category: "boxes", desc: "بروست حار", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس  القرمشة بروست", price: 250, category: "boxes", desc: "بروست حار", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "بوكس  القرمشة ميكس", price: 300, category: "boxes", desc: "بروست حار", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      
+      // شاورما
+      { name: "شاورما سوبر تشارجر دجاج", price: 200, category: "shawarma", desc: "NEW",  image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما سوبر تشارجر لحم", price: 250, category: "shawarma", desc: "NEW",  image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما ساندويش دجاج M", price: 70, category: "shawarma", desc: " ",  image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما ساندويش لحم M", price: 90, category: "shawarma", desc: " ",  image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما ساندويش ميكس M", price: 80, category: "shawarma", desc: " ",  image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما ساندويش دجاج L", price: 85, category: "shawarma", desc: " ",  image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما ساندويش لحم L", price: 105, category: "shawarma", desc: " ",  image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما ساندويش ميكس L", price: 95, category: "shawarma", desc: " ",  image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: " شاورما مع بطاطس وموزريلا دجاج", price: 110, category: "shawarma", desc: "دجاج + بطاطس + جبنة", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: " شاورما مع بطاطس وموزريلا لحم", price: 120, category: "shawarma", desc: "لحم + بطاطس + جبنة", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما مع بطاطس وموزريلا ميكس", price: 110, category: "shawarma", desc: "ميكس + بطاطس + جبنة", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما فينو دجاج", price: 90, category: "shawarma",desc: " ", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما فينو لحم", price: 110, category: "shawarma",desc: " ", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما فينو ميكس", price: 100, category: "shawarma", desc: " ", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما ديزل دجاج", price: 120, category: "shawarma",desc: " ", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما ديزل لحم", price: 140, category: "shawarma",desc: " ", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما ديزل ميكس", price: 130, category: "shawarma",desc: " ", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما كايزر دجاح ", price: 60, category: "shawarma",desc: " ", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "شاورما كايزر لحم", price: 75, category: "shawarma",desc: " ", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "ربع شاورما (دجاج)", price: 155, category: "shawarma", desc: "ربع كيلو", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "ربع شاورما (لحمه)", price: 185, category: "shawarma", desc: "ربع كيلو", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "نص شاورما (دجاج)", price: 290, category: "shawarma", desc: "ربع كيلو", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "نص شاورما (لحمه)", price: 360, category: "shawarma", desc: "نصف كيلو شاورما", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      // وجبات شاورا
+      { name: "وجبة شاورا عربي", price: 125, category: "shawarma_meals", desc: "عربي", image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=400&fit=crop" },
+      { name: "وجبة شاورا اكسترا", price: 170, category: "shawarma_meals", desc: "شاورا اكسترا", image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=400&h=400&fit=crop" },
+      { name: "فتة شاورا أهل الشام", price: 155, category: "shawarma_meals", desc: "فتة مميزة", image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=400&h=400&fit=crop" },
+      // بروست
+      { name: "ميني بوكس بروست (5 قطع)", price: 210, category: "broast", desc: "بروست حار/بارد", image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&h=400&fit=crop" },
+      { name: "وجبة ربع صدر بروست", price: 150, category: "broast", desc: "ربع صدر + بطاطس", image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&h=400&fit=crop" },
+      { name: "دجاج مشوي شواية (نصف)", price: 175, category: "broast", desc: "نصف دجاجة", image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&h=400&fit=crop" },
+      // فراز تشيكن
+      { name: "فراز تشيكن M", price: 105, category: "fraz", desc: "قطع كريسبي", image: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=400&h=400&fit=crop" },
+      { name: "فراز شاورما دجاج L", price: 125, category: "fraz", desc: "شاورما دجاج مع كريسبي", image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&h=400&fit=crop" },
+      // باستا
+      { name: "باستا نجرسكو", price: 95, category: "pasta", desc: "مكرونة بصوص الكريمة", image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=400&fit=crop" },
+      { name: "باستا شاورما دجاج", price: 105, category: "pasta", desc: "مكرونة بشاورما", image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=400&fit=crop" },
+      // برجر
+      { name: "تشيكن تكساس برجر", price: 120, category: "burger", desc: "دجاج تكساس", image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop" },
+      { name: "بيف كلاسيك برجر", price: 110, category: "burger", desc: "لحم كلاسيك", image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop" },
+      { name: "زنجر دجاج", price: 100, category: "burger", desc: "زنجر مقرمش", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      { name: "سوبريم كرانشي", price: 110, category: "burger", desc: "سوبريم", image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
+      // وجبات غربي
+      { name: "وجبة كريسبي غربي", price: 200, category: "western_meals", desc: "وجبة كاملة", image: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=400&h=400&fit=crop" },
+      { name: "وجبة مكسيكي غربي", price: 190, category: "western_meals", desc: "مكسيكي", image: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=400&h=400&fit=crop" },
+      // كريب
+      { name: "كريب أهل الشام", price: 125, category: "crepe", desc: "كريب مميز", image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&h=400&fit=crop" },
+      { name: "كريب زنجر", price: 100, category: "crepe", desc: "زنجر", image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&h=400&fit=crop" },
+      { name: "كريب شاورما دجاج", price: 100, category: "crepe", desc: "شاورما دجاج", image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&h=400&fit=crop" },
+      // بيتزا
+      { name: "بيتزا مارغريتا S", price: 70, category: "pizza", desc: "مارغريتا صغير", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=400&fit=crop" },
+      { name: "بيتزا تشيكن رانش M", price: 165, category: "pizza", desc: "دجاج رانش", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=400&fit=crop" },
+      { name: "بيتزا شاورما دجاج L", price: 200, category: "pizza", desc: "شاورما كبير", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=400&fit=crop" },
+      // مناقشات
+      { name: "منقوشة زعتر", price: 15, category: "manakeesh", desc: "زعتر وزيت", image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=400&fit=crop" },
+      { name: "منقوشة حلوم و قشقوان", price: 75, category: "manakeesh", desc: "جبنة حلوم وقشقوان", image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=400&fit=crop" },
+      { name: "منقوشة شيش طاووق", price: 40, category: "manakeesh", desc: "شيش طاووق", image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=400&fit=crop" },
+      // مقبلات
+      { name: "سلطة خضراء", price: 35, category: "appetizers", desc: "طازجة", image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=400&fit=crop" },
+      { name: "بطاطس مقلية", price: 25, category: "appetizers", desc: "مقرمشة", image: "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=400&h=400&fit=crop" },
+      { name: "شوربة كريمة دجاج", price: 50, category: "appetizers", desc: "كريمة دجاج", image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=400&fit=crop" },
+      // عصائر ومشروبات
+      { name: "عصير برتقال طازج", price: 50, category: "drinks", desc: "طبيعي", image: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop" },
+      { name: "عصير فراولة", price: 50, category: "drinks", desc: "طازج", image: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop" },
+      { name: "مشروب غازي (كان)", price: 20, category: "drinks", desc: "كوكاكولا/سبرايت", image: "https://images.unsplash.com/photo-1622484211884-8e8e5eb5df12?w=400&h=400&fit=crop" },
+      { name: "مياه معدنية صغيرة", price: 10, category: "drinks", desc: "مياه", image: "https://images.unsplash.com/photo-1616118132534-381e8988ff92?w=400&h=400&fit=crop" }
+    ];
+
+    // Categories with icons (responsive layout)
+const categories = [
+  { id: "boxes", name: "بوكسات", icon: "fas fa-box" },
+  { id: "shawarma", name: "شاورما", icon: "fas fa-stroopwafel"},
+  { id: "shawarma_meals", name: "وجبات شاورما", icon: "fas fa-utensils" },
+  { id: "broast", name: "بروست", icon: "fas fa-drumstick-bite" },
+  { id: "fraz", name: "فرايد تشيكن", icon: "fas fa-drumstick-bite" },
+  { id: "pasta", name: "باستا", icon: "fas fa-bowl-food" },
+  { id: "burger", name: "برجر", icon: "fas fa-burger" },
+  { id: "western_meals", name: "غربي", icon: "fas fa-plate-wheat" },
+  { id: "crepe", name: "كريب", icon: "fas fa-stroopwafel" },
+  { id: "pizza", name: "بيتزا", icon: "fas fa-pizza-slice" },
+  { id: "manakeesh", name: "مناقيش", icon: "fas fa-bread-slice" },
+  { id: "appetizers", name: "مقبلات", icon: "fas fa-seedling" },
+  { id: "drinks", name: "عصائر", icon: "fas fa-glass-water" },
+  { id: "selection", name: "طلبك", icon: "fas fa-basket-shopping" }
+];
+
+    const STORAGE_KEY = 'ahlalsham_levantine';
+    let selection = [];
+    let nextId = 0;
+    let activeCategory = "boxes";
+    let currentSearch = "";
+    let isLoading = false;
+    let loadTimeout = null;
+    let cardObserver = null;
+
+    const dynamicContainer = document.getElementById("dynamicContent");
+    const searchInput = document.getElementById("searchInput");
+    const searchWrapper = document.getElementById("searchWrapper");
+    const bottomNav = document.getElementById("bottomNav");
+
+    // LocalStorage
+    function loadSelection() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if(stored) {
+        try {
+          let parsed = JSON.parse(stored);
+          if(Array.isArray(parsed)) { selection = parsed; if(selection.length) nextId = Math.max(...selection.map(i=>i.id)) + 1; }
+        } catch(e) {}
+      }
+    }
+    function saveSelection() { localStorage.setItem(STORAGE_KEY, JSON.stringify(selection)); }
+
+    function showToast(itemName) {
+      let toast = document.querySelector('.toast-notification');
+      if(toast) toast.remove();
+      toast = document.createElement('div');
+      toast.className = 'toast-notification';
+      toast.innerHTML = `<i class="fas fa-check-circle"></i> تم إضافة ${itemName} إلى طلبك`;
+      document.body.appendChild(toast);
+      setTimeout(()=> toast.classList.add('show'), 10);
+      setTimeout(()=> { toast.classList.remove('show'); setTimeout(()=>toast.remove(), 300); }, 1800);
+    }
+
+    function addToSelection(name, price) {
+      let existing = selection.find(i=> i.name === name);
+      if(existing) existing.quantity++;
+      else selection.push({ id: nextId++, name, price, quantity: 1 });
+      saveSelection();
+      showToast(name);
+      if(activeCategory === "selection") renderSelectionPage();
+    }
+    function updateQty(id, delta) {
+      let idx = selection.findIndex(i=> i.id === id);
+      if(idx !== -1) {
+        let newQty = selection[idx].quantity + delta;
+        if(newQty <= 0) selection.splice(idx,1);
+        else selection[idx].quantity = newQty;
+        saveSelection();
+        if(activeCategory === "selection") renderSelectionPage();
+      }
+    }
+    function removeItem(id) { selection = selection.filter(i=> i.id !== id); saveSelection(); if(activeCategory === "selection") renderSelectionPage(); }
+    function clearAll() { selection = []; saveSelection(); if(activeCategory === "selection") renderSelectionPage(); }
+
+    function renderSelectionPage() {
+      if(!selection.length) {
+        dynamicContainer.innerHTML = `<div class="selection-view"><div class="selection-header"><h3><i class="fas fa-basket-shopping"></i> طلبك الحالي</h3><button id="clearAllBtn" class="clear-btn"><i class="fas fa-trash-alt"></i> مسح</button></div><div class="empty-selection">✋ لم تضف أي عنصر بعد. اضغط + على أي صنف.</div><div class="selection-total"><span>الإجمالي:</span><span>0 ج.م</span></div></div>`;
+        let btn = document.getElementById("clearAllBtn"); if(btn) btn.onclick = clearAll;
+        return;
+      }
+      let total = 0;
+      let itemsHtml = selection.map(item => {
+        total += item.price * item.quantity;
+        return `<div class="selection-item" data-id="${item.id}"><div class="item-details"><div class="item-title">${item.name}</div><div class="item-price-sm">${item.price} ج.م</div></div><div class="item-actions"><button class="qty-btn dec-qty" data-id="${item.id}">-</button><span class="item-qty">${item.quantity}</span><button class="qty-btn inc-qty" data-id="${item.id}">+</button><button class="remove-item" data-id="${item.id}"><i class="fas fa-trash-can"></i></button></div></div>`;
+      }).join('');
+      dynamicContainer.innerHTML = `<div class="selection-view"><div class="selection-header"><h3><i class="fas fa-basket-shopping"></i> طلبك الحالي</h3><button id="clearAllBtn" class="clear-btn"><i class="fas fa-trash-alt"></i> مسح</button></div><div class="selection-list">${itemsHtml}</div><div class="selection-total"><span>الإجمالي:</span><span>${total} ج.م</span></div></div>`;
+      document.querySelectorAll(".dec-qty").forEach(btn=> btn.addEventListener("click",(e)=> updateQty(parseInt(btn.dataset.id), -1)));
+      document.querySelectorAll(".inc-qty").forEach(btn=> btn.addEventListener("click",(e)=> updateQty(parseInt(btn.dataset.id), 1)));
+      document.querySelectorAll(".remove-item").forEach(btn=> btn.addEventListener("click",(e)=> removeItem(parseInt(btn.dataset.id))));
+      let clearBtn = document.getElementById("clearAllBtn"); if(clearBtn) clearBtn.onclick = clearAll;
+    }
+
+    function getFilteredMenu() {
+      let filtered = menuItemsRaw.filter(i=> i.category === activeCategory);
+      if(currentSearch.trim()) {
+        let kw = currentSearch.toLowerCase();
+        filtered = filtered.filter(i=> i.name.includes(kw) || i.desc.includes(kw));
+      }
+      return filtered;
+    }
+
+    function renderMenuCards(items) {
+      if(!items.length) { dynamicContainer.innerHTML = `<div class="no-results"><i class="fas fa-search"></i> لا توجد عناصر</div>`; return; }
+      dynamicContainer.innerHTML = items.map(item => `
+        <div class="menu-card">
+          <div class="card-img"><img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.src='https://placehold.co/400x400?text=أهل+الشام'"></div>
+          <div class="card-info"><div class="item-name">${item.name}</div><div class="item-desc">${item.desc}</div><div class="price-row"><div class="price"><i class="fas fa-coins"></i> ${item.price} ج.م</div><button class="add-btn" data-name="${item.name}" data-price="${item.price}"><i class="fas fa-plus"></i></button></div></div>
+        </div>`).join('');
+      document.querySelectorAll(".add-btn").forEach(btn=> btn.addEventListener("click",(e)=>{
+        e.stopPropagation();
+        btn.classList.add("added-animation"); setTimeout(()=> btn.classList.remove("added-animation"),300);
+        addToSelection(btn.dataset.name, parseInt(btn.dataset.price));
+      }));
+    }
+
+    function observeCards() {
+      if(cardObserver) cardObserver.disconnect();
+      let cards = document.querySelectorAll(".menu-card");
+      cards.forEach(c=>c.classList.remove("revealed"));
+      cardObserver = new IntersectionObserver(entries=> entries.forEach(e=> { if(e.isIntersecting){ e.target.classList.add("revealed"); cardObserver.unobserve(e.target); } }), { threshold:0.1 });
+      cards.forEach(c=>cardObserver.observe(c));
+      cards.forEach(c=>{ if(c.getBoundingClientRect().top < window.innerHeight-80) c.classList.add("revealed"); });
+    }
+
+    function refreshMenu() {
+      if(isLoading || activeCategory === "selection") return;
+      renderMenuCards(getFilteredMenu());
+      observeCards();
+    }
+
+    function switchCategory(catId) {
+      if(loadTimeout) clearTimeout(loadTimeout);
+      isLoading = true;
+      dynamicContainer.innerHTML = `<div class="loading-spinner"><div class="spinner"></div></div>`;
+      loadTimeout = setTimeout(()=>{
+        activeCategory = catId;
+        if(activeCategory === "selection") { searchWrapper.classList.add("search-hidden"); renderSelectionPage(); }
+        else { searchWrapper.classList.remove("search-hidden"); renderMenuCards(getFilteredMenu()); observeCards(); }
+        isLoading = false;
+        loadTimeout = null;
+      }, 200);
+    }
+
+    function renderBottomNav() {
+      bottomNav.innerHTML = categories.map(cat => `<button class="nav-item ${activeCategory===cat.id ? 'active':''}" data-category="${cat.id}"><i class="${cat.icon}"></i><span>${cat.name}</span></button>`).join('');
+      document.querySelectorAll(".nav-item").forEach(btn=> btn.addEventListener("click",()=>{
+        let catId = btn.dataset.category;
+        if(catId === activeCategory || isLoading) return;
+        if(catId !== "selection") { searchInput.value = ""; currentSearch = ""; }
+        document.querySelectorAll(".nav-item").forEach(n=> n.classList.remove("active"));
+        btn.classList.add("active");
+        switchCategory(catId);
+        document.querySelector(".menu-section").scrollIntoView({ behavior: "smooth", block:"start" });
+      }));
+    }
+
+    let searchDeb;
+    function handleSearch(e) {
+      if(activeCategory === "selection") return;
+      if(searchDeb) clearTimeout(searchDeb);
+      searchDeb = setTimeout(()=>{
+        currentSearch = e.target.value.trim();
+        if(!isLoading){
+          dynamicContainer.style.opacity = "0.6";
+          setTimeout(()=>{ refreshMenu(); dynamicContainer.style.opacity="1"; }, 120);
+        } else refreshMenu();
+      }, 250);
+    }
+
+    loadSelection();
+    renderBottomNav();
+    activeCategory = "boxes";
+    searchInput.addEventListener("input", handleSearch);
+    switchCategory("boxes");
+  })();
+</script>
+</body>
+</html>
