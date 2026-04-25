@@ -1,6 +1,5 @@
   (function(){
     // ---------- GROUPED MENU DATA (with sizes L/M and prices) ----------
-    // We manually define groups based on the original items.
     const groupedMenu = [
       // بوكسات (Boxes) - no sizes (single price)
       { name: "بوكس الزعيم", desc: "ميكس - بوكس الزعيم", category: "boxes", sizes: { ميكس: 335 }, image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
