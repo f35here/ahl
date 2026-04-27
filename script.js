@@ -1,6 +1,6 @@
   (function(){
-    // ---------- GROUPED MENU DATA (with sizes L/M and prices) ----------
-    const groupedMenu = [
+    // ---------- FULL MENU DATA  ----------
+ const groupedMenu = [
       // بوكسات (Boxes) - no sizes (single price)
       { name: "بوكس الزعيم", desc: "ميكس - بوكس الزعيم", category: "boxes", sizes: { ميكس: 335 }, image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
       { name: "بوكس العظمة", desc: "دجاج / لحم / ميكس", category: "boxes", sizes: { دجاج: 345, لحم: 400, ميكس: 370 }, image: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400&h=400&fit=crop" },
@@ -183,8 +183,7 @@
       { name: "كرانشي", desc: "كوكتيل كرانشي", category: "drinks", sizes: { حلو: 50 }, image: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=400&h=400&fit=crop" },
       { name: "كوكتيل استوائي", desc: "كوكتيل استوائي", category: "drinks", sizes: { حلو: 50 }, image: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=400&h=400&fit=crop" }
     ];
-
-    // Categories as before
+    // Categories for bottom nav (all food categories, no 'selection')
     const categories = [
       { id: "boxes", name: "بوكسات", icon: "fas fa-box" },
       { id: "shawarma", name: "شاورما", icon: "fas fa-stroopwafel" },
@@ -198,209 +197,115 @@
       { id: "pizza", name: "بيتزا", icon: "fas fa-pizza-slice" },
       { id: "manakeesh", name: "مناقيش", icon: "fas fa-bread-slice" },
       { id: "appetizers", name: "مقبلات", icon: "fas fa-seedling" },
-      { id: "drinks", name: "عصائر", icon: "fas fa-glass-water" },
-      { id: "selection", name: "طلبك", icon: "fas fa-basket-shopping" }
+      { id: "drinks", name: "عصائر", icon: "fas fa-glass-water" }
     ];
-
-    const STORAGE_KEY = 'ahlalsham_grouped';
-    let selection = []; // each item: { id, name, size, price, quantity, fullName }
+    
+    let selection = [];
     let nextId = 0;
     let activeCategory = "boxes";
     let currentSearch = "";
     let isLoading = false;
     let loadTimeout = null;
     let cardObserver = null;
-    let currentItemSelectedSize = {}; // store selected size key per card (by item name)
-
+    let currentItemSelectedSize = {};
+    const STORAGE_KEY = 'ahlalsham_grouped';
     const dynamicContainer = document.getElementById("dynamicContent");
     const searchInput = document.getElementById("searchInput");
     const searchWrapper = document.getElementById("searchWrapper");
     const bottomNav = document.getElementById("bottomNav");
-
-    function loadSelection() {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if(stored) {
-        try {
-          let parsed = JSON.parse(stored);
-          if(Array.isArray(parsed)) { selection = parsed; if(selection.length) nextId = Math.max(...selection.map(i=>i.id)) + 1; }
-        } catch(e) {}
-      }
+    const cartBadge = document.getElementById("cartBadge");
+    const popupOverlay = document.getElementById("orderPopup");
+    const popupBody = document.getElementById("popupBody");
+    const popupTotalSpan = document.getElementById("popupTotalAmount");
+    const popupClearBtn = document.getElementById("popupClearAllBtn");
+    
+    // helpers
+    function loadSelection() { const stored = localStorage.getItem(STORAGE_KEY); if(stored) { try { let p = JSON.parse(stored); if(Array.isArray(p)) { selection = p; if(selection.length) nextId = Math.max(...selection.map(i=>i.id)) + 1; } } catch(e){} } updateCartBadge(); }
+    function saveSelection() { localStorage.setItem(STORAGE_KEY, JSON.stringify(selection)); updateCartBadge(); }
+    function updateCartBadge() { let totalQty = selection.reduce((sum,i)=> sum + i.quantity, 0); if(totalQty > 0) { cartBadge.style.display = "flex"; cartBadge.innerText = totalQty > 99 ? "99+" : totalQty; } else cartBadge.style.display = "none"; }
+    function showToast(msg) { let toast = document.querySelector('.toast-notification'); if(toast) toast.remove(); toast = document.createElement('div'); toast.className = 'toast-notification'; toast.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`; document.body.appendChild(toast); setTimeout(()=> toast.classList.add('show'), 10); setTimeout(()=> { toast.classList.remove('show'); setTimeout(()=>toast.remove(), 300); }, 1800); }
+    
+    function addToSelection(itemName, sizeKey, price) { 
+      let sizeLabel = (sizeKey && sizeKey !== 'default') ? ` (${sizeKey})` : ''; 
+      let displayName = itemName + sizeLabel; 
+      let existing = selection.find(i => i.name === itemName && i.size === sizeKey); 
+      if(existing) existing.quantity++; 
+      else selection.push({ id: nextId++, name: itemName, size: sizeKey, price, quantity: 1, displayName }); 
+      saveSelection(); 
+      showToast(`تم إضافة ${displayName || itemName}`); 
+      if(popupOverlay.classList.contains("active")) renderPopupOrder(); 
     }
-    function saveSelection() { localStorage.setItem(STORAGE_KEY, JSON.stringify(selection)); }
-
-    function showToast(msg) {
-      let toast = document.querySelector('.toast-notification');
-      if(toast) toast.remove();
-      toast = document.createElement('div');
-      toast.className = 'toast-notification';
-      toast.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
-      document.body.appendChild(toast);
-      setTimeout(()=> toast.classList.add('show'), 10);
-      setTimeout(()=> { toast.classList.remove('show'); setTimeout(()=>toast.remove(), 300); }, 1800);
+    function updateQty(id, delta) { 
+      let idx = selection.findIndex(i=> i.id === id); 
+      if(idx !== -1) { 
+        let newQty = selection[idx].quantity + delta; 
+        if(newQty <= 0) selection.splice(idx,1); 
+        else selection[idx].quantity = newQty; 
+        saveSelection(); 
+        if(popupOverlay.classList.contains("active")) renderPopupOrder(); 
+      } 
     }
-
-    function addToSelection(itemName, sizeKey, price) {
-      let sizeLabel = sizeKey === 'default' ? '' : ` (${sizeKey})`;
-      let displayName = itemName + sizeLabel;
-      let existing = selection.find(i => i.name === itemName && i.size === sizeKey);
-      if(existing) existing.quantity++;
-      else selection.push({ id: nextId++, name: itemName, size: sizeKey, price, quantity: 1, displayName });
-      saveSelection();
-      showToast(`تم إضافة ${displayName || itemName}`);
-      if(activeCategory === "selection") renderSelectionPage();
-    }
-
-    function updateQty(id, delta) {
-      let idx = selection.findIndex(i=> i.id === id);
-      if(idx !== -1) {
-        let newQty = selection[idx].quantity + delta;
-        if(newQty <= 0) selection.splice(idx,1);
-        else selection[idx].quantity = newQty;
-        saveSelection();
-        if(activeCategory === "selection") renderSelectionPage();
-      }
-    }
-    function removeItem(id) { selection = selection.filter(i=> i.id !== id); saveSelection(); if(activeCategory === "selection") renderSelectionPage(); }
-    function clearAll() { selection = []; saveSelection(); if(activeCategory === "selection") renderSelectionPage(); }
-
-    function renderSelectionPage() {
-      if(!selection.length) {
-        dynamicContainer.innerHTML = `<div class="selection-view"><div class="selection-header"><h3><i class="fas fa-basket-shopping"></i> طلبك الحالي</h3><button id="clearAllBtn" class="clear-btn"><i class="fas fa-trash-alt"></i> مسح</button></div><div class="empty-selection">✋ لم تضف أي عنصر بعد. اضغط + على أي صنف.</div><div class="selection-total"><span>الإجمالي:</span><span>0 ج.م</span></div></div>`;
-        let btn = document.getElementById("clearAllBtn"); if(btn) btn.onclick = clearAll;
+    function removeItem(id) { selection = selection.filter(i=> i.id !== id); saveSelection(); if(popupOverlay.classList.contains("active")) renderPopupOrder(); }
+    function clearAllOrders() { selection = []; saveSelection(); if(popupOverlay.classList.contains("active")) renderPopupOrder(); showToast("تم مسح الطلب"); }
+    
+    // Render popup order summary
+    function renderPopupOrder() {
+      if(!popupBody) return;
+      if(selection.length === 0) {
+        popupBody.innerHTML = `<div class="empty-order-popup">🛒 طلبك فارغ. أضف أطباق من القائمة.</div>`;
+        popupTotalSpan.innerText = "0 ج.م";
         return;
       }
       let total = 0;
       let itemsHtml = selection.map(item => {
         total += item.price * item.quantity;
         let nameDisplay = item.displayName || item.name + (item.size && item.size !== 'default' ? ` (${item.size})` : '');
-        return `<div class="selection-item" data-id="${item.id}"><div class="item-details"><div class="item-title">${nameDisplay}</div><div class="item-price-sm">${item.price} ج.م</div></div><div class="item-actions"><button class="qty-btn dec-qty" data-id="${item.id}">-</button><span class="item-qty">${item.quantity}</span><button class="qty-btn inc-qty" data-id="${item.id}">+</button><button class="remove-item" data-id="${item.id}"><i class="fas fa-trash-can"></i></button></div></div>`;
+        return `<div class="selection-item-popup" data-id="${item.id}">
+                  <div class="item-details-popup">
+                    <div class="item-title-popup">${nameDisplay}</div>
+                    <div class="item-price-popup">${item.price} ج.م</div>
+                  </div>
+                  <div class="item-actions-popup">
+                    <button class="qty-btn-popup dec-popup" data-id="${item.id}">-</button>
+                    <span>${item.quantity}</span>
+                    <button class="qty-btn-popup inc-popup" data-id="${item.id}">+</button>
+                    <button class="remove-item-popup" data-id="${item.id}"><i class="fas fa-trash-can"></i></button>
+                  </div>
+                </div>`;
       }).join('');
-      dynamicContainer.innerHTML = `<div class="selection-view"><div class="selection-header"><h3><i class="fas fa-basket-shopping"></i> طلبك الحالي</h3><button id="clearAllBtn" class="clear-btn"><i class="fas fa-trash-alt"></i> مسح</button></div><div class="selection-list">${itemsHtml}</div><div class="selection-total"><span>الإجمالي:</span><span>${total} ج.م</span></div></div>`;
-      document.querySelectorAll(".dec-qty").forEach(btn=> btn.addEventListener("click",(e)=> updateQty(parseInt(btn.dataset.id), -1)));
-      document.querySelectorAll(".inc-qty").forEach(btn=> btn.addEventListener("click",(e)=> updateQty(parseInt(btn.dataset.id), 1)));
-      document.querySelectorAll(".remove-item").forEach(btn=> btn.addEventListener("click",(e)=> removeItem(parseInt(btn.dataset.id))));
-      let clearBtn = document.getElementById("clearAllBtn"); if(clearBtn) clearBtn.onclick = clearAll;
+      popupBody.innerHTML = `<div class="selection-list-popup">${itemsHtml}</div>`;
+      popupTotalSpan.innerText = `${total} ج.م`;
+      // attach events
+      document.querySelectorAll(".dec-popup").forEach(btn => btn.addEventListener("click", (e) => { let id = parseInt(btn.dataset.id); updateQty(id, -1); }));
+      document.querySelectorAll(".inc-popup").forEach(btn => btn.addEventListener("click", (e) => { let id = parseInt(btn.dataset.id); updateQty(id, 1); }));
+      document.querySelectorAll(".remove-item-popup").forEach(btn => btn.addEventListener("click", (e) => { let id = parseInt(btn.dataset.id); removeItem(id); }));
     }
-
-    function getFilteredMenu() {
-      let filtered = groupedMenu.filter(i=> i.category === activeCategory);
-      if(currentSearch.trim()) {
-        let kw = currentSearch.toLowerCase();
-        filtered = filtered.filter(i=> i.name.includes(kw) || i.desc.includes(kw));
-      }
-      return filtered;
-    }
-
-    function renderMenuCards(items) {
-      if(!items.length) { dynamicContainer.innerHTML = `<div class="no-results"><i class="fas fa-search"></i> لا توجد عناصر</div>`; return; }
-      let cardsHtml = '';
-      items.forEach(item => {
-        let sizeOptions = Object.keys(item.sizes);
-        let defaultSize = sizeOptions[0];
-        let selectedSize = currentItemSelectedSize[item.name] || defaultSize;
-        let currentPrice = item.sizes[selectedSize];
-        let sizeButtonsHtml = sizeOptions.map(sz => `<button class="size-btn ${selectedSize === sz ? 'active' : ''}" data-item="${item.name}" data-size="${sz}">${sz === 'default' ? 'عادي' : sz}</button>`).join('');
-        cardsHtml += `
-          <div class="menu-card" data-item-name="${item.name}">
-            <div class="card-img"><img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.src='https://placehold.co/400x400?text=أهل+الشام'"></div>
-            <div class="card-info">
-              <div class="item-name">${item.name}</div>
-              <div class="item-desc">${item.desc}</div>
-              <div class="size-buttons">${sizeButtonsHtml}</div>
-              <div class="price-row">
-                <div class="price"><i class="fas fa-coins"></i> ${currentPrice} ج.م</div>
-                <button class="add-btn" data-name="${item.name}" data-price="${currentPrice}" data-size="${selectedSize}"><i class="fas fa-plus"></i></button>
-              </div>
-            </div>
-          </div>`;
-      });
-      dynamicContainer.innerHTML = cardsHtml;
-      // attach size button events
-      document.querySelectorAll(".size-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          let itemName = btn.dataset.item;
-          let newSize = btn.dataset.size;
-          // update active class
-          let parentCard = btn.closest(".menu-card");
-          parentCard.querySelectorAll(".size-btn").forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
-          // update price and add-btn data
-          let itemData = groupedMenu.find(i => i.name === itemName);
-          let newPrice = itemData.sizes[newSize];
-          let priceSpan = parentCard.querySelector(".price");
-          priceSpan.innerHTML = `<i class="fas fa-coins"></i> ${newPrice} ج.م`;
-          let addBtn = parentCard.querySelector(".add-btn");
-          addBtn.dataset.price = newPrice;
-          addBtn.dataset.size = newSize;
-          currentItemSelectedSize[itemName] = newSize;
-        });
-      });
-      document.querySelectorAll(".add-btn").forEach(btn=> btn.addEventListener("click",(e)=>{
-        e.stopPropagation();
-        let name = btn.dataset.name;
-        let price = parseInt(btn.dataset.price);
-        let size = btn.dataset.size;
-        btn.classList.add("added-animation"); setTimeout(()=> btn.classList.remove("added-animation"),300);
-        addToSelection(name, size, price);
-      }));
-    }
-
-    function observeCards() {
-      if(cardObserver) cardObserver.disconnect();
-      let cards = document.querySelectorAll(".menu-card");
-      cards.forEach(c=>c.classList.remove("revealed"));
-      cardObserver = new IntersectionObserver(entries=> entries.forEach(e=> { if(e.isIntersecting){ e.target.classList.add("revealed"); cardObserver.unobserve(e.target); } }), { threshold:0.1 });
-      cards.forEach(c=>cardObserver.observe(c));
-      cards.forEach(c=>{ if(c.getBoundingClientRect().top < window.innerHeight-80) c.classList.add("revealed"); });
-    }
-
-    function refreshMenu() {
-      if(isLoading || activeCategory === "selection") return;
-      renderMenuCards(getFilteredMenu());
-      observeCards();
-    }
-
-    function switchCategory(catId) {
-      if(loadTimeout) clearTimeout(loadTimeout);
-      isLoading = true;
-      dynamicContainer.innerHTML = `<div class="loading-spinner"><div class="spinner"></div></div>`;
-      loadTimeout = setTimeout(()=>{
-        activeCategory = catId;
-        if(activeCategory === "selection") { searchWrapper.classList.add("search-hidden"); renderSelectionPage(); }
-        else { searchWrapper.classList.remove("search-hidden"); renderMenuCards(getFilteredMenu()); observeCards(); }
-        isLoading = false;
-        loadTimeout = null;
-      }, 200);
-    }
-
-    function renderBottomNav() {
-      bottomNav.innerHTML = categories.map(cat => `<button class="nav-item ${activeCategory===cat.id ? 'active':''}" data-category="${cat.id}"><i class="${cat.icon}"></i><span>${cat.name}</span></button>`).join('');
-      document.querySelectorAll(".nav-item").forEach(btn=> btn.addEventListener("click",()=>{
-        let catId = btn.dataset.category;
-        if(catId === activeCategory || isLoading) return;
-        if(catId !== "selection") { searchInput.value = ""; currentSearch = ""; }
-        document.querySelectorAll(".nav-item").forEach(n=> n.classList.remove("active"));
-        btn.classList.add("active");
-        switchCategory(catId);
-        document.querySelector(".menu-section").scrollIntoView({ behavior: "smooth", block:"start" });
-      }));
-    }
-
+    
+    function getFilteredMenu() { let filtered = groupedMenu.filter(i=> i.category === activeCategory); if(currentSearch.trim()) { let kw = currentSearch.toLowerCase(); filtered = filtered.filter(i=> i.name.includes(kw) || i.desc.includes(kw)); } return filtered; }
+    function renderMenuCards(items) { if(!items.length) { dynamicContainer.innerHTML = `<div class="no-results"><i class="fas fa-search"></i> لا توجد عناصر</div>`; return; } let cardsHtml = ''; items.forEach(item => { let sizeOptions = Object.keys(item.sizes); let defaultSize = sizeOptions[0]; let selectedSize = currentItemSelectedSize[item.name] || defaultSize; let currentPrice = item.sizes[selectedSize]; let sizeButtonsHtml = sizeOptions.map(sz => `<button class="size-btn ${selectedSize === sz ? 'active' : ''}" data-item="${item.name}" data-size="${sz}">${sz}</button>`).join(''); cardsHtml += `<div class="menu-card" data-item-name="${item.name}"><div class="card-img"><img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.src='https://placehold.co/400x400?text=أهل+الشام'"></div><div class="card-info"><div class="item-name">${item.name}</div><div class="item-desc">${item.desc}</div><div class="size-buttons">${sizeButtonsHtml}</div><div class="price-row"><div class="price"><i class="fas fa-coins"></i> ${currentPrice} ج.م</div><button class="add-btn" data-name="${item.name}" data-price="${currentPrice}" data-size="${selectedSize}"><i class="fas fa-plus"></i></button></div></div></div>`; }); dynamicContainer.innerHTML = cardsHtml; 
+      document.querySelectorAll(".size-btn").forEach(btn => { btn.addEventListener("click", (e) => { let itemName = btn.dataset.item; let newSize = btn.dataset.size; let parentCard = btn.closest(".menu-card"); parentCard.querySelectorAll(".size-btn").forEach(b => b.classList.remove("active")); btn.classList.add("active"); let itemData = groupedMenu.find(i => i.name === itemName); let newPrice = itemData.sizes[newSize]; let priceSpan = parentCard.querySelector(".price"); priceSpan.innerHTML = `<i class="fas fa-coins"></i> ${newPrice} ج.م`; let addBtn = parentCard.querySelector(".add-btn"); addBtn.dataset.price = newPrice; addBtn.dataset.size = newSize; currentItemSelectedSize[itemName] = newSize; }); }); 
+      document.querySelectorAll(".add-btn").forEach(btn=> btn.addEventListener("click",(e)=>{ e.stopPropagation(); let name = btn.dataset.name; let price = parseInt(btn.dataset.price); let size = btn.dataset.size; addToSelection(name, size, price); })); }
+    function observeCards() { if(cardObserver) cardObserver.disconnect(); let cards = document.querySelectorAll(".menu-card"); cards.forEach(c=>c.classList.remove("revealed")); cardObserver = new IntersectionObserver(entries=> entries.forEach(e=> { if(e.isIntersecting){ e.target.classList.add("revealed"); cardObserver.unobserve(e.target); } }), { threshold:0.1 }); cards.forEach(c=>cardObserver.observe(c)); cards.forEach(c=>{ if(c.getBoundingClientRect().top < window.innerHeight-80) c.classList.add("revealed"); }); }
+    function refreshMenu() { if(isLoading) return; renderMenuCards(getFilteredMenu()); observeCards(); }
+    function switchCategory(catId) { if(loadTimeout) clearTimeout(loadTimeout); isLoading = true; dynamicContainer.innerHTML = `<div class="loading-spinner"><div class="spinner"></div></div>`; loadTimeout = setTimeout(()=>{ activeCategory = catId; searchWrapper.classList.remove("search-hidden"); renderMenuCards(getFilteredMenu()); observeCards(); isLoading = false; loadTimeout = null; }, 200); }
+    
+    function renderBottomNav() { bottomNav.innerHTML = categories.map(cat => `<button class="nav-item ${activeCategory===cat.id ? 'active':''}" data-category="${cat.id}"><i class="${cat.icon}"></i><span>${cat.name}</span></button>`).join(''); document.querySelectorAll(".nav-item").forEach(btn=> btn.addEventListener("click",()=>{ let catId = btn.dataset.category; if(catId === activeCategory || isLoading) return; searchInput.value = ""; currentSearch = ""; document.querySelectorAll(".nav-item").forEach(n=> n.classList.remove("active")); btn.classList.add("active"); switchCategory(catId); document.querySelector(".menu-section").scrollIntoView({ behavior: "smooth", block:"start" }); })); }
+    
     let searchDeb;
-    function handleSearch(e) {
-      if(activeCategory === "selection") return;
-      if(searchDeb) clearTimeout(searchDeb);
-      searchDeb = setTimeout(()=>{
-        currentSearch = e.target.value.trim();
-        if(!isLoading){
-          dynamicContainer.style.opacity = "0.6";
-          setTimeout(()=>{ refreshMenu(); dynamicContainer.style.opacity="1"; }, 120);
-        } else refreshMenu();
-      }, 250);
-    }
-
+    function handleSearch(e) { if(searchDeb) clearTimeout(searchDeb); searchDeb = setTimeout(()=>{ currentSearch = e.target.value.trim(); refreshMenu(); }, 250); }
+    
+    // Popup triggers (top icon)
+    function openPopup() { renderPopupOrder(); popupOverlay.classList.add("active"); }
+    function closePopup() { popupOverlay.classList.remove("active"); }
+    const orderIcon = document.getElementById("orderIconTrigger");
+    if(orderIcon) orderIcon.addEventListener("click", openPopup);
+    document.getElementById("closePopupBtn")?.addEventListener("click", closePopup);
+    popupOverlay?.addEventListener("click", (e) => { if(e.target === popupOverlay) closePopup(); });
+    if(popupClearBtn) popupClearBtn.addEventListener("click", clearAllOrders);
+    
     loadSelection();
     renderBottomNav();
     searchInput.addEventListener("input", handleSearch);
     switchCategory("boxes");
+    setInterval(() => { if(!popupOverlay.classList.contains("active")) renderPopupOrder(); }, 1000);
   })();
