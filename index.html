@@ -1,37 +1,103 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes" />
-  <meta name="description" content="أهل الشام - قائمة طعام أنيقة بنمط  استمتع بأشهى المأكولات الشامية في تجربة رقمية فاخرة." />
-  <meta name="theme-color" content="#131313" />
-  <title>أهل الشام | AHL ALSHAM</title>
-<!-- Favicon (using same logo image) -->
-  <link rel="icon" type="image/jpeg" href="./logo/favIcon/logo.jpg" />
-  <link rel="apple-touch-icon" href="./logo/favIcon/logo.jpg" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <!-- Google Fonts: Noto Serif, Be Vietnam Pro, Space Grotesk -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-<link rel="stylesheet" href="style.css" />
-</head>
-<body>
-<div class="app">
-  <div class="glass-header">
-    <div class="header-content">
-      <div class="brand"><h1>أهل الشام</h1><div class="tagline">تذوقها بشكل مختلف </div></div>
-      <img class="logo-img" src="./logo/logo.jpg" alt="شعار أهل الشام" />
-    </div>
-    <div id="searchWrapper" class="search-wrapper">
-      <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="ابحث في القائمة... (شاورما، بروست)" autocomplete="off" /></div>
-    </div>
-  </div>
-  <main class="menu-section"><div id="dynamicContent" class="menu-grid"></div>
-    <div class="developer-credit"><span>الخط الساخن : 15765 <i class="fas fa-phone-alt"></i></span><hr style="border:0.5px solid var(--outline); width:100%; margin:12px 0;"><a href="https://wa.me/201013706142" target="_blank"><i class="fab fa-whatsapp"></i> Developed by Abdelkader Mohamed</a></div>
-  </main>
-  <div class="bottom-nav" id="bottomNav"></div>
-</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes"
+    />
+    <meta
+      name="description"
+      content="أهل الشام - قائمة طعام أنيقة بنمط  استمتع بأشهى المأكولات الشامية في تجربة رقمية فاخرة."
+    />
+    <meta name="theme-color" content="#131313" />
+    <title>أهل الشام | AHL ALSHAM</title>
+    <link rel="icon" type="image/jpeg" href="./logo/favIcon/logo.jpg" />
+    <link rel="apple-touch-icon" href="./logo/favIcon/logo.jpg" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div class="glass-header">
+        <div class="header-content">
+          <!-- brand section (right side) -->
+          <div class="brand">
+            <h1>أهل الشام</h1>
+            <div class="tagline">تذوقها بشكل مختلف</div>
+          </div>
 
-<script src="script.js"></script>
-</body>
+          <!-- CENTER: Order icon with badge (replaces old card icon) -->
+          <div id="orderIconTrigger" class="order-icon-wrapper">
+            <i class="fas fa-bag-shopping"></i>
+            <span id="cartBadge" class="cart-badge" style="display: none"
+              >0</span
+            >
+          </div>
+
+          <!-- logo left side -->
+          <img class="logo-img" src="./logo/logo.jpg" alt="شعار أهل الشام" />
+        </div>
+        <div id="searchWrapper" class="search-wrapper">
+          <div class="search-box">
+            <i class="fas fa-search"></i
+            ><input
+              type="text"
+              id="searchInput"
+              placeholder="ابحث في القائمة... (شاورما، بروست)"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+      </div>
+      <main class="menu-section">
+        <div id="dynamicContent" class="menu-grid"></div>
+        <div class="developer-credit">
+          <span>الخط الساخن : 15765 <i class="fas fa-phone-alt"></i></span>
+          <hr
+            style="
+              border: 0.5px solid var(--outline);
+              width: 100%;
+              margin: 12px 0;
+            "
+          />
+          <a href="https://wa.me/201013706142" target="_blank"
+            ><i class="fab fa-whatsapp"></i> Developed by Abdelkader Mohamed</a
+          >
+        </div>
+      </main>
+      <!-- bottom navigation (categories ONLY) -->
+      <div class="bottom-nav" id="bottomNav"></div>
+    </div>
+
+    <!-- Popup Modal for Order Summary (triggered by top icon) -->
+    <div id="orderPopup" class="popup-overlay">
+      <div class="popup-order-container">
+        <div class="popup-header">
+          <h3><i class="fas fa-basket-shopping"></i> طلبك الحالي</h3>
+          <button class="close-popup-btn" id="closePopupBtn">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="popup-body" id="popupBody">
+          <div class="empty-order-popup">يرجى الانتظار...</div>
+        </div>
+        <div class="popup-total" id="popupTotalArea">
+          <span>الإجمالي:</span><span id="popupTotalAmount">0 ج.م</span>
+        </div>
+        <button id="popupClearAllBtn" class="clear-all-popup">
+          <i class="fas fa-trash-alt"></i> مسح الطلب بالكامل
+        </button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
 </html>
